@@ -75,7 +75,7 @@ public class CandyCrushModel {
         return removedIndices;
     }
 
-    private void refillEmptyCells(List<Integer> removedIndices) {
+    public void refillEmptyCells(List<Integer> removedIndices) {
         for (int index : removedIndices) {
             Random random = new Random();
             int randomGetal = random.nextInt(5) + 1;
