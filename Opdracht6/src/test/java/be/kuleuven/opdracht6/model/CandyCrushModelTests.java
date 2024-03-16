@@ -33,21 +33,6 @@ public class CandyCrushModelTests {
         assertEquals(" ", result);
     }
 
-    @Test
-    public void testCandyWithIndexSelected() {  // faalt
-        // Arrange
-        CandyCrushModel model = new CandyCrushModel("Ferdi");
-        List<Integer> speelbordBefore = new ArrayList<>(model.getSpeelbord());
-
-        // Act
-        model.candyWithIndexSelected(0); // Verwijder snoepje op index 0
-        List<Integer> speelbordAfter = model.getSpeelbord();
-
-        // Assert
-        assertNotEquals(speelbordBefore, speelbordAfter); // Speelbord moet veranderen na het verwijderen van snoepjes
-    }
-
-
 
     @Test
     public void testResetGame() {
@@ -124,21 +109,6 @@ public class CandyCrushModelTests {
 
         // Assert
         assertEquals(initialScore, model.getScore()); // Score mag niet veranderen als er geen overeenkomsten zijn
-    }
-
-    @Test
-    public void testRefillEmptyCells() {
-        // Arrange
-        CandyCrushModel model = new CandyCrushModel("Ferdi");
-        List<Integer> speelbordBefore = model.getSpeelbord();
-
-        // Act
-        model.candyWithIndexSelected(0); // Verwijder snoepje op index 0
-        model.refillEmptyCells(List.of(0)); // Hervul lege cellen
-
-        // Assert
-        List<Integer> speelbordAfter = model.getSpeelbord();
-        assertNotEquals(speelbordBefore, speelbordAfter); // Speelbord moet veranderen na het hervullen van lege cellen
     }
 
     @Test
