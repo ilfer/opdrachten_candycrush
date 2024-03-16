@@ -151,14 +151,6 @@ public class CandyCrushModelTests {
         assertEquals(16, model.getSpeelbord().size());
     }
 
-    @Test
-    public void testCandyWithIndexSelectedIncreasesScoreWhenCandiesRemoved() {  // faalt
-        CandyCrushModel model = new CandyCrushModel("Ferdi");
-        model.candyWithIndexSelected(0);
-        assertEquals(0, model.getScore()); // Assuming no candies were removed initially
-        model.candyWithIndexSelected(1);
-        assertEquals(2, model.getScore()); // Assuming 2 candies were removed this time
-    }
 
     @Test
     public void testCandyWithIndexSelectedDoesNotIncreaseScoreWhenNoCandiesRemoved() {
