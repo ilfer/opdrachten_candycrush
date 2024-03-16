@@ -12,13 +12,13 @@ public class CandyCrushModelTests {
     @Test
     public void testGetSpeler() {
         // Arrange
-        CandyCrushModel model = new CandyCrushModel("Arne");
+        CandyCrushModel model = new CandyCrushModel("Ferdi");
 
         // Act
         String result = model.getSpeler();
 
         // Assert
-        assertEquals("Arne", result);
+        assertEquals("Ferdi", result);
     }
 
     @Test
@@ -36,7 +36,7 @@ public class CandyCrushModelTests {
     @Test
     public void testCandyWithIndexSelected() {  // faalt
         // Arrange
-        CandyCrushModel model = new CandyCrushModel("Arne");
+        CandyCrushModel model = new CandyCrushModel("Ferdi");
         List<Integer> speelbordBefore = new ArrayList<>(model.getSpeelbord());
 
         // Act
@@ -52,7 +52,7 @@ public class CandyCrushModelTests {
     @Test
     public void testResetGame() {
         // Arrange
-        CandyCrushModel model = new CandyCrushModel("Arne");
+        CandyCrushModel model = new CandyCrushModel("Ferdi");
 
         // Act
         model.resetGame();
@@ -66,7 +66,7 @@ public class CandyCrushModelTests {
     @Test
     public void testGetWidth() {
         // Arrange
-        CandyCrushModel model = new CandyCrushModel("Arne");
+        CandyCrushModel model = new CandyCrushModel("Ferdi");
 
         // Act
         int width = model.getWidth();
@@ -78,7 +78,7 @@ public class CandyCrushModelTests {
     @Test
     public void testGetHeight() {
         // Arrange
-        CandyCrushModel model = new CandyCrushModel("Arne");
+        CandyCrushModel model = new CandyCrushModel("Ferdi");
 
         // Act
         int height = model.getHeight();
@@ -90,7 +90,7 @@ public class CandyCrushModelTests {
     @Test
     public void testGetSpeelbord() {
         // Arrange
-        CandyCrushModel model = new CandyCrushModel("Arne");
+        CandyCrushModel model = new CandyCrushModel("Ferdi");
 
         // Act
         List<Integer> speelbord = model.getSpeelbord();
@@ -103,7 +103,7 @@ public class CandyCrushModelTests {
     @Test
     public void testCandyWithIndexSelectedInvalidIndex() {
         // Arrange
-        CandyCrushModel model = new CandyCrushModel("Arne");
+        CandyCrushModel model = new CandyCrushModel("Ferdi");
         int initialScore = model.getScore();
 
         // Act
@@ -116,7 +116,7 @@ public class CandyCrushModelTests {
     @Test
     public void testCandyWithIndexSelectedNoMatches() {
         // Arrange
-        CandyCrushModel model = new CandyCrushModel("Arne");
+        CandyCrushModel model = new CandyCrushModel("Ferdi");
         int initialScore = model.getScore();
 
         // Act
@@ -129,7 +129,7 @@ public class CandyCrushModelTests {
     @Test
     public void testRefillEmptyCells() {
         // Arrange
-        CandyCrushModel model = new CandyCrushModel("Arne");
+        CandyCrushModel model = new CandyCrushModel("Ferdi");
         List<Integer> speelbordBefore = model.getSpeelbord();
 
         // Act
@@ -144,7 +144,7 @@ public class CandyCrushModelTests {
     @Test
     public void testGetIndexFromRowColumn() {
         // Arrange
-        CandyCrushModel model = new CandyCrushModel("Arne");
+        CandyCrushModel model = new CandyCrushModel("Ferdi");
 
         // Act
         int index = model.getIndexFromRowColumn(1, 2); // Row = 1, Column = 2
@@ -155,19 +155,19 @@ public class CandyCrushModelTests {
 
     @Test
     public void testInitialScoreIsZero() {
-        CandyCrushModel model = new CandyCrushModel("Test");
+        CandyCrushModel model = new CandyCrushModel("Ferdi");
         assertEquals(0, model.getScore());
     }
 
     @Test
     public void testInitialBoardHasCorrectSize() {
-        CandyCrushModel model = new CandyCrushModel("Test");
+        CandyCrushModel model = new CandyCrushModel("Ferdi");
         assertEquals(16, model.getSpeelbord().size());
     }
 
     @Test
     public void testResetGameResetsScoreToZero() {
-        CandyCrushModel model = new CandyCrushModel("Test");
+        CandyCrushModel model = new CandyCrushModel("Ferdi");
         model.candyWithIndexSelected(0);
         model.resetGame();
         assertEquals(0, model.getScore());
@@ -175,7 +175,7 @@ public class CandyCrushModelTests {
 
     @Test
     public void testResetGameResetsBoardToNewState() {
-        CandyCrushModel model = new CandyCrushModel("Test");
+        CandyCrushModel model = new CandyCrushModel("Ferdi");
         model.candyWithIndexSelected(0);
         model.resetGame();
         assertEquals(16, model.getSpeelbord().size());
@@ -183,7 +183,7 @@ public class CandyCrushModelTests {
 
     @Test
     public void testCandyWithIndexSelectedIncreasesScoreWhenCandiesRemoved() {  // faalt
-        CandyCrushModel model = new CandyCrushModel("Test");
+        CandyCrushModel model = new CandyCrushModel("Ferdi");
         model.candyWithIndexSelected(0);
         assertEquals(0, model.getScore()); // Assuming no candies were removed initially
         model.candyWithIndexSelected(1);
@@ -192,9 +192,10 @@ public class CandyCrushModelTests {
 
     @Test
     public void testCandyWithIndexSelectedDoesNotIncreaseScoreWhenNoCandiesRemoved() {
-        CandyCrushModel model = new CandyCrushModel("Test");
+        CandyCrushModel model = new CandyCrushModel("Ferdi");
         assertEquals(0, model.getScore()); // Initial score is 0
         model.candyWithIndexSelected(-1); // No candies are removed
         assertEquals(0, model.getScore()); // Score remains 0
     }
+
 }
