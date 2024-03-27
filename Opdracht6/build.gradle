@@ -40,7 +40,6 @@ dependencies {
 
   testImplementation("org.junit.jupiter:junit-jupiter-api:${junitVersion}")
   testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
-  implementation('be.kuleuven:opdracht5:1.0-SNAPSHOT')
 }
 
 test {

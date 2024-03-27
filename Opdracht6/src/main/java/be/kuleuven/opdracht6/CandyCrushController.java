@@ -5,6 +5,7 @@ import java.util.ResourceBundle;
 
 import be.kuleuven.opdracht6.model.CandyCrushModel;
 import be.kuleuven.opdracht6.view.CandyCrushView;
+import be.kuleuven.opdracht6.BoardSize;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -85,12 +86,11 @@ public class CandyCrushController {
             // Hide the login pane
             loginPane.setVisible(false);
 
-            // Initialize the model with the player name
-            model = new CandyCrushModel(playerName);
-            view = new CandyCrushView(model);
+            // Initialize the model with the player name and board size
+            BoardSize boardSize = new BoardSize(4, 4); // Aangenomen dat het speelbord 4x4 is
+            model = new CandyCrushModel(playerName, boardSize);
+            view = new CandyCrushView(model, boardSize);
             speelbord.getChildren().add(view);
-            view.setOnMouseClicked(this::onCandyClicked);
-            btnReset.setOnAction(event1 -> resetGame());
         } else {
             // Display an error message if no name is entered
             errorLabel.setText("Voer een naam in.");
@@ -98,23 +98,24 @@ public class CandyCrushController {
     }
 
     @FXML
-    public void onCandyClicked(MouseEvent me) {
-        int candyIndex = view.getIndexOfClicked(me);
-        model.candyWithIndexSelected(candyIndex);
+    void onCandyClicked(MouseEvent me) {
+        Position position = view.getPositionFromMouseEvent(me);
+        model.candyWithPositionSelected(position);
         update();
     }
 
-    private void resetGame() {
+    @FXML
+    void resetGame() {
         model.resetGame();
         update(); // Update the view after resetting the game
     }
 
-    private void updateScoreLabel() {
-        scoreLabel.setText("Score: " + model.getScore()); // Bijwerken van de score in het label
-    }
-
-    public void update() {
+    private void update() {
         view.update();
         updateScoreLabel(); // Nieuwe methode om score label bij te werken;
+    }
+
+    private void updateScoreLabel() {
+        scoreLabel.setText("Score: " + model.getScore()); // Bijwerken van de score in het label
     }
 }
