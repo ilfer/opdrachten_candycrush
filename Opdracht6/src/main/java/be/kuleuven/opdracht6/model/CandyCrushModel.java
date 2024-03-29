@@ -1,7 +1,6 @@
 package be.kuleuven.opdracht6.model;
 
 import be.kuleuven.opdracht6.*;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -38,50 +37,24 @@ public class CandyCrushModel {
     public void candyWithPositionSelected(Position position) {
         if (position != null) {
             int index = position.toIndex();
-            List<Integer> removedIndices = updateNeighbours(index, speelbord.get(index));
-            score += removedIndices.size();
-            refillEmptyCells(removedIndices);
-        } else {
-            System.out.println("model:candyWithPositionSelected:positionWasNull");
-        }
-    }
-
-    public Iterable<Position> getSameNeighbourPositions(Position position) {
-        List<Position> result = new ArrayList<>();
-        Candy currentCandy = speelbord.get(position.toIndex());
-
-        for (Position neighborPosition : position.neighborPositions()) {
-            if (isWithinBoard(neighborPosition)) {
-                Candy neighborCandy = speelbord.get(neighborPosition.toIndex());
-                if (neighborCandy.equals(currentCandy)) {
-                    result.add(neighborPosition);
+            Candy selectedCandy = speelbord.get(index);
+            List<Position> matchingPositions = getSameNeighbourPositions(position);
+            if (matchingPositions.size() >= 2) {
+                // Verwijder de overeenkomende snoepjes en verhoog de score
+                for (Position matchingPosition : matchingPositions) {
+                    int matchingIndex = matchingPosition.toIndex();
+                    speelbord.set(matchingIndex, null);
+                    score++;
                 }
+                // Hervul lege cellen
+                refillEmptyCells(matchingPositions);
             }
         }
-
-        return result;
     }
 
-    private List<Integer> updateNeighbours(int index, Candy candy) {
-        List<Integer> removedIndices = new ArrayList<>();
-        Iterable<Position> neighbours = Position.fromIndex(index, boardSize).neighborPositions();
-        List<Integer> neighbourIndices = new ArrayList<>();
-        for (Position neighbour : neighbours) {
-            neighbourIndices.add(neighbour.toIndex());
-        }
-
-        if (neighbourIndices.size() >= 2) {
-            neighbourIndices.add(index); // Voeg het geselecteerde snoepje toe aan de te verwijderen lijst
-            for (int neighbourIndex : neighbourIndices) {
-                speelbord.set(neighbourIndex, null); // Verwijder het snoepje (stel in op null)
-                removedIndices.add(neighbourIndex);
-            }
-        }
-        return removedIndices;
-    }
-
-    public void refillEmptyCells(List<Integer> removedIndices) {
-        for (int index : removedIndices) {
+    public void refillEmptyCells(List<Position> removedPositions) {
+        for (Position position : removedPositions) {
+            int index = position.toIndex();
             speelbord.set(index, generateRandomCandy());
         }
     }
@@ -94,27 +67,45 @@ public class CandyCrushModel {
         }
     }
 
-    public int getIndexFromPosition(Position position) {
-        return position.toIndex();
-    }
-
     private Candy generateRandomCandy() {
         Random random = new Random();
-        int randomType = random.nextInt(5); // Assuming there are 5 types of candies
+        int randomType = random.nextInt(8); // Assuming there are 5 types of candies
         switch (randomType) {
             case 0:
-                return new NormalCandy(1); // Assuming NormalCandy is one of the implementations of Candy
+                return new NormalCandy(0); // Assuming NormalCandy is one of the implementations of Candy
             case 1:
-                return new DoublePointsCandy(2); // Assuming DoublePointsCandy1 is one of the implementations of Candy
+                return new NormalCandy(1); // Assuming NormalCandy is one of the implementations of Candy
             case 2:
-                return new DoublePointsRemoveRow(3); // Assuming DoublePointsCandy2 is one of the implementations of Candy
+                return new NormalCandy(2); // Assuming NormalCandy is one of the implementations of Candy
             case 3:
-                return new ExtraMoveCandy(4); // Assuming ExtraMoveCandy1 is one of the implementations of Candy
+                return new NormalCandy(3); // Assuming NormalCandy is one of the implementations of Candy
             case 4:
-                return new ExtraMoveCandyRemoveBorder(5); // Assuming ExtraMoveCandy2 is one of the implementations of Candy
+                return new DoublePointsCandy(5); // Assuming DoublePointsCandy is one of the implementations of Candy
+            case 5:
+                return new DoublePointsRemoveRow(6); // Assuming DoublePointsRemoveRow is one of the implementations of Candy
+            case 6:
+                return new ExtraMoveCandy(7); // Assuming ExtraMoveCandy is one of the implementations of Candy
+            case 7:
+                return new ExtraMoveCandyRemoveBorder(8); // Assuming ExtraMoveCandyRemoveBorder is one of the implementations of Candy
             default:
                 return new NormalCandy(1); // Default to NormalCandy if no valid candy type is generated
         }
+    }
+
+    public List<Position> getSameNeighbourPositions(Position position) {
+        List<Position> matchingPositions = new ArrayList<>();
+        Candy currentCandy = speelbord.get(position.toIndex());
+
+        for (Position neighborPosition : position.neighborPositions()) {
+            if (isWithinBoard(neighborPosition)) {
+                Candy neighborCandy = speelbord.get(neighborPosition.toIndex());
+                if (neighborCandy != null && neighborCandy.equals(currentCandy)) {
+                    matchingPositions.add(neighborPosition);
+                }
+            }
+        }
+
+        return matchingPositions;
     }
 
     private boolean isWithinBoard(Position position) {

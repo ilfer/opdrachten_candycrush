@@ -5,18 +5,20 @@ import be.kuleuven.opdracht6.Candy;
 import be.kuleuven.opdracht6.BoardSize;
 import be.kuleuven.opdracht6.Position;
 import be.kuleuven.opdracht6.NormalCandy;
-
+import be.kuleuven.opdracht6.DoublePointsCandy;
+import be.kuleuven.opdracht6.DoublePointsRemoveRow;
+import be.kuleuven.opdracht6.ExtraMoveCandy;
+import be.kuleuven.opdracht6.ExtraMoveCandyRemoveBorder;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Region;
+import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Text;
 
 import java.util.Iterator;
 
-public class CandyCrushView extends Region {
+public class CandyCrushView extends GridPane {
     private CandyCrushModel model;
     private BoardSize boardSize;
 
@@ -24,57 +26,72 @@ public class CandyCrushView extends Region {
         this.model = model;
         this.boardSize = boardSize;
         update();
+
+        setOnMouseClicked(this::handleMouseClicked);
     }
 
     public void update() {
         getChildren().clear();
-        int i = 0;
-        int height = 0;
-        Iterator<Candy> iter = model.getSpeelbord().iterator();
-        while (iter.hasNext()) {
-            Candy candy = iter.next();
-            Position position = new Position(height, i, boardSize);
-            Node candyShape = makeCandyShape(position, candy);
-            getChildren().add(candyShape);
 
-            if (i == boardSize.numColumns() - 1) {
-                i = 0;
-                height++;
-            } else {
-                i++;
+        for (int row = 0; row < boardSize.numRows(); row++) {
+            for (int col = 0; col < boardSize.numColumns(); col++) {
+                Candy candy = model.getSpeelbord().get(row * boardSize.numColumns() + col);
+                Node candyShape = makeCandyShape(candy);
+                add(candyShape, col, row);
             }
         }
     }
 
+    private void handleMouseClicked(MouseEvent event) {
+        Position position = getPositionFromMouseEvent(event);
+        model.candyWithPositionSelected(position);
+        update();
+    }
+
     public Position getPositionFromMouseEvent(MouseEvent me) {
-        Position position = null;
-        int row = (int) (me.getY() / getHeightPerCandy());
-        int column = (int) (me.getX() / getWidthPerCandy());
-        if (row < boardSize.numRows() && column < boardSize.numColumns()) {
-            position = new Position(row, column, boardSize);
-        }
-        return position;
+        double cellWidth = getWidth() / boardSize.numColumns();
+        double cellHeight = getHeight() / boardSize.numRows();
+
+        int column = (int) (me.getX() / cellWidth);
+        int row = (int) (me.getY() / cellHeight);
+
+        return new Position(row, column, boardSize);
     }
 
-    private Node makeCandyShape(Position position, Candy candy) {
+    private Node makeCandyShape(Candy candy) {
+        Node shape;
+        Color color;
+
+        // Bepaal de kleur op basis van het type snoepje
         if (candy instanceof NormalCandy) {
-            Circle circle = new Circle(getWidthPerCandy() / 2);
-            circle.setFill(Color.RED); // Choose color for NormalCandy
-            circle.setCenterX(position.column() * getWidthPerCandy() + getWidthPerCandy() / 2);
-            circle.setCenterY(position.row() * getHeightPerCandy() + getHeightPerCandy() / 2);
-            return circle;
+            color = Color.RED;
+        } else if (candy instanceof DoublePointsCandy) {
+            color = Color.GREEN;
+        } else if (candy instanceof DoublePointsRemoveRow) {
+            color = Color.BLUE;
+        } else if (candy instanceof ExtraMoveCandy) {
+            color = Color.YELLOW;
+        } else if (candy instanceof ExtraMoveCandyRemoveBorder) {
+            color = Color.ORANGE;
         } else {
-            Rectangle rectangle = new Rectangle(position.column() * getWidthPerCandy(), position.row() * getHeightPerCandy(), getWidthPerCandy(), getHeightPerCandy());
-            rectangle.setFill(Color.BLUE); // Choose color for special candies
-            return rectangle;
+            // Default kleur voor onbekende snoepjes
+            color = Color.WHITE;
         }
+
+        // Maak de vorm van het snoepje
+        if (candy instanceof NormalCandy) {
+            Circle circle = new Circle(20);
+            circle.setFill(color);
+            shape = circle;
+        } else {
+            Rectangle rectangle = new Rectangle(40, 40);
+            rectangle.setFill(color);
+            shape = rectangle;
+        }
+
+        shape.setOnMouseClicked(this::handleMouseClicked);
+
+        return shape;
     }
 
-    private double getWidthPerCandy() {
-        return getWidth() / boardSize.numColumns();
-    }
-
-    private double getHeightPerCandy() {
-        return getHeight() / boardSize.numRows();
-    }
 }
