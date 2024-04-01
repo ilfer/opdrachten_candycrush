@@ -80,13 +80,13 @@ public class CandyCrushModel {
             case 3:
                 return new NormalCandy(3); // Assuming NormalCandy is one of the implementations of Candy
             case 4:
-                return new DoublePointsCandy(5); // Assuming DoublePointsCandy is one of the implementations of Candy
+                return new DoublePointsCandy(4); // Assuming DoublePointsCandy is one of the implementations of Candy
             case 5:
-                return new DoublePointsRemoveRow(6); // Assuming DoublePointsRemoveRow is one of the implementations of Candy
+                return new DoublePointsRemoveRow(5); // Assuming DoublePointsRemoveRow is one of the implementations of Candy
             case 6:
-                return new ExtraMoveCandy(7); // Assuming ExtraMoveCandy is one of the implementations of Candy
+                return new ExtraMoveCandy(6); // Assuming ExtraMoveCandy is one of the implementations of Candy
             case 7:
-                return new ExtraMoveCandyRemoveBorder(8); // Assuming ExtraMoveCandyRemoveBorder is one of the implementations of Candy
+                return new ExtraMoveCandyRemoveBorder(7); // Assuming ExtraMoveCandyRemoveBorder is one of the implementations of Candy
             default:
                 return new NormalCandy(1); // Default to NormalCandy if no valid candy type is generated
         }
