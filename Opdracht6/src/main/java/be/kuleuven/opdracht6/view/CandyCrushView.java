@@ -17,8 +17,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 
-import java.util.Iterator;
-
 public class CandyCrushView extends GridPane {
     private CandyCrushModel model;
     private BoardSize boardSize;
@@ -45,8 +43,6 @@ public class CandyCrushView extends GridPane {
         }
     }
 
-
-
     private void handleMouseClicked(MouseEvent event) {
         Position position = getPositionFromMouseEvent(event);
         if (position != null) {
@@ -54,7 +50,6 @@ public class CandyCrushView extends GridPane {
             update();
         }
     }
-
 
     public Position getPositionFromMouseEvent(MouseEvent me) {
         double cellWidth = getWidth() / boardSize.numColumns();
@@ -100,7 +95,11 @@ public class CandyCrushView extends GridPane {
             shape = new Rectangle(40, 40, color); // Default vorm en kleur voor onbekende snoepjes
         }
 
-        shape.setOnMouseClicked(this::handleMouseClicked);
+        shape.setOnMouseClicked(event -> {
+            Position clickedPosition = position;
+            model.candyWithPositionSelected(clickedPosition);
+            update();
+        });
 
         return shape;
     }

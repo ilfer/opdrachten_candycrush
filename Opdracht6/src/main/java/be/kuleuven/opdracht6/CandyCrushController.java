@@ -1,27 +1,17 @@
 package be.kuleuven.opdracht6;
 
-import java.net.URL;
-import java.util.ResourceBundle;
-
 import be.kuleuven.opdracht6.model.CandyCrushModel;
 import be.kuleuven.opdracht6.view.CandyCrushView;
-import be.kuleuven.opdracht6.BoardSize;
+
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 
 public class CandyCrushController {
-
-    @FXML
-    private ResourceBundle resources;
-
-    @FXML
-    private URL location;
 
     @FXML
     private Label Label;
@@ -95,13 +85,6 @@ public class CandyCrushController {
             // Display an error message if no name is entered
             errorLabel.setText("Voer een naam in.");
         }
-    }
-
-    @FXML
-    void onCandyClicked(MouseEvent me) {
-        Position position = view.getPositionFromMouseEvent(me);
-        model.candyWithPositionSelected(position);
-        update();
     }
 
     @FXML
