@@ -83,9 +83,9 @@ public class CandyCrushView extends GridPane {
         } else if (candy instanceof DoublePointsCandy || candy instanceof DoublePointsRemoveRow ||
                 candy instanceof ExtraMoveCandy || candy instanceof ExtraMoveCandyRemoveBorder) {
             color = switch (candy.getColor()) {
-                case 4 -> Color.GREEN;
-                case 5 -> Color.BLUE;
-                case 6 -> Color.YELLOW;
+                case 4 -> Color.CYAN;
+                case 5 -> Color.MOCCASIN;
+                case 6 -> Color.LIGHTCORAL;
                 case 7 -> Color.ORANGE;
                 default -> throw new IllegalArgumentException("Invalid candy.");
             };

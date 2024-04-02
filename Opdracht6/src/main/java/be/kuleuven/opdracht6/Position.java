@@ -40,6 +40,10 @@ public record Position(int row, int column, BoardSize boardSize) {
         return neighbors;
     }
 
+    public boolean isLastColumn() {
+        return column == boardSize.numColumns() - 1;
+    }
+
     private boolean isValidPosition(int row, int column) {
         return row >= 0 && row < boardSize.numRows() && column >= 0 && column < boardSize.numColumns();
     }
