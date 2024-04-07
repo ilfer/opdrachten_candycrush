@@ -7,19 +7,16 @@ import java.util.Random;
 
 public class CandyCrushModel {
     private String speler;
-    private List<Candy> speelbord;
+    private Board<Candy> speelbord;
     private BoardSize boardSize;
     private int score;
 
     public CandyCrushModel(String speler, BoardSize boardSize) {
         this.speler = speler;
         this.boardSize = boardSize;
-        speelbord = new ArrayList<>();
+        speelbord = new Board<>(boardSize, Candy.class);
+        speelbord.fill(this::generateRandomCandy);
         score = 0;
-
-        for (int i = 0; i < boardSize.numRows() * boardSize.numColumns(); i++) {
-            speelbord.add(generateRandomCandy());
-        }
     }
 
     public String getSpeler() {
@@ -27,7 +24,11 @@ public class CandyCrushModel {
     }
 
     public List<Candy> getSpeelbord() {
-        return speelbord;
+        List<Candy> candyList = new ArrayList<>();
+        for (Position position : boardSize.positions()) {
+            candyList.add(speelbord.getCellAt(position));
+        }
+        return candyList;
     }
 
     public int getScore() {
@@ -37,13 +38,13 @@ public class CandyCrushModel {
     public void candyWithPositionSelected(Position position) {
         if (position != null) {
             int index = position.toIndex();
-            Candy selectedCandy = speelbord.get(index);
+            Candy selectedCandy = speelbord.getCellAt(position);
             List<Position> matchingPositions = getSameNeighbourPositions(position);
             if (matchingPositions.size() >= 2) {
                 // Verwijder de overeenkomende snoepjes en verhoog de score
                 for (Position matchingPosition : matchingPositions) {
                     int matchingIndex = matchingPosition.toIndex();
-                    speelbord.set(matchingIndex, null);
+                    speelbord.replaceCellAt(matchingPosition, null);
                     score++;
                 }
                 // Hervul lege cellen
@@ -54,20 +55,17 @@ public class CandyCrushModel {
 
     public void refillEmptyCells(List<Position> removedPositions) {
         for (Position position : removedPositions) {
-            int index = position.toIndex();
-            speelbord.set(index, generateRandomCandy());
+            speelbord.replaceCellAt(position, generateRandomCandy(position));
         }
     }
+
 
     public void resetGame() {
         score = 0;
-        speelbord.clear();
-        for (int i = 0; i < boardSize.numRows() * boardSize.numColumns(); i++) {
-            speelbord.add(generateRandomCandy());
-        }
+        speelbord.fill(this::generateRandomCandy);
     }
 
-    private Candy generateRandomCandy() {
+    private Candy generateRandomCandy(Position position) {
         Random random = new Random();
         int randomType = random.nextInt(8); // Assuming there are 5 types of candies
         switch (randomType) {
@@ -94,11 +92,11 @@ public class CandyCrushModel {
 
     public List<Position> getSameNeighbourPositions(Position position) {
         List<Position> matchingPositions = new ArrayList<>();
-        Candy currentCandy = speelbord.get(position.toIndex());
+        Candy currentCandy = speelbord.getCellAt(position);
 
         for (Position neighborPosition : position.neighborPositions()) {
             if (isWithinBoard(neighborPosition)) {
-                Candy neighborCandy = speelbord.get(neighborPosition.toIndex());
+                Candy neighborCandy = speelbord.getCellAt(neighborPosition);
                 if (neighborCandy != null && neighborCandy.equals(currentCandy)) {
                     matchingPositions.add(neighborPosition);
                 }
@@ -107,6 +105,7 @@ public class CandyCrushModel {
 
         return matchingPositions;
     }
+
 
     private boolean isWithinBoard(Position position) {
         return position.row() >= 0 && position.row() < boardSize.numRows() &&
