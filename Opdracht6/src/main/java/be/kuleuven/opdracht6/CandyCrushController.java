@@ -8,6 +8,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 
@@ -80,11 +81,19 @@ public class CandyCrushController {
             BoardSize boardSize = new BoardSize(4, 4); // Aangenomen dat het speelbord 4x4 is
             model = new CandyCrushModel(playerName, boardSize);
             view = new CandyCrushView(model, boardSize);
+            view.setOnMouseClicked(this::onCandyClicked);
             speelbord.getChildren().add(view);
         } else {
             // Display an error message if no name is entered
             errorLabel.setText("Voer een naam in.");
         }
+    }
+
+    @FXML
+    void onCandyClicked(MouseEvent me) {
+        Position position = view.getPositionFromMouseEvent(me);
+        model.candyWithPositionSelected(position);
+        update();
     }
 
     @FXML
