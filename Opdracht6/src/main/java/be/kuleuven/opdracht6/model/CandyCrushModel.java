@@ -22,6 +22,10 @@ public class CandyCrushModel {
         }
     }
 
+    public String getSpeler() {
+        return speler;
+    }
+
     public List<Candy> getSpeelbord() {
         return speelbord;
     }
