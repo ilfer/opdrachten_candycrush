@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class CandyCrushBoardTest {
     @Test
@@ -66,5 +67,29 @@ public class CandyCrushBoardTest {
         Board<String> board2 = new Board<>(size2, String.class);
 
         assertThrows(IllegalArgumentException.class, () -> board1.copyTo(board2));
+    }
+
+    @Test
+    void testGetPositionsOfElement() {
+        // Maak een nieuw speelbord met een grootte van 3x3
+        BoardSize boardSize = new BoardSize(3, 3);
+        Board<Integer> board = new Board<>(boardSize, Integer.class);
+
+        // Plaats enkele elementen op het speelbord
+        board.replaceCellAt(new Position(0, 0, boardSize), 1);
+        board.replaceCellAt(new Position(1, 1, boardSize), 2);
+        board.replaceCellAt(new Position(2, 2, boardSize), 1);
+
+        // Test voor het ophalen van posities van het element 1
+        assertEquals(2, board.getPositionsOfElement(1).size());
+        assertTrue(board.getPositionsOfElement(1).contains(new Position(0, 0, boardSize)));
+        assertTrue(board.getPositionsOfElement(1).contains(new Position(2, 2, boardSize)));
+
+        // Test voor het ophalen van posities van het element 2
+        assertEquals(1, board.getPositionsOfElement(2).size());
+        assertTrue(board.getPositionsOfElement(2).contains(new Position(1, 1, boardSize)));
+
+        // Test voor een niet-bestaand element
+        assertEquals(0, board.getPositionsOfElement(3).size());
     }
 }
