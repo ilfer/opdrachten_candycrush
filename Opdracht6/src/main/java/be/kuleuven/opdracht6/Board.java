@@ -1,22 +1,40 @@
 package be.kuleuven.opdracht6;
 
 import java.util.function.Function;
+import java.util.*;
 
 public class Board<T> {
     private final BoardSize size;
-    private final T[][] cells;
+    private final Map<Position, T> cellsMap;
+    private final Map<T, Set<Position>> elementsPositionsMap;
 
     public Board(BoardSize size, Class<T> type) {
         this.size = size;
-        this.cells = (T[][]) new Object[size.numRows()][size.numColumns()];
+        this.cellsMap = new HashMap<>();
+        this.elementsPositionsMap = new HashMap<>();
     }
 
     public T getCellAt(Position position) {
-        return cells[position.row()][position.column()];
+        return cellsMap.get(position);
     }
 
     public void replaceCellAt(Position position, T newCell) {
-        cells[position.row()][position.column()] = newCell;
+        T oldCell = cellsMap.get(position);
+        if (oldCell != null) {
+            // Remove old position from elementsPositionsMap
+            Set<Position> positions = elementsPositionsMap.get(oldCell);
+            if (positions != null) {
+                positions.remove(position);
+                if (positions.isEmpty()) {
+                    elementsPositionsMap.remove(oldCell);
+                }
+            }
+        }
+
+        cellsMap.put(position, newCell);
+
+        // Update elementsPositionsMap with new position
+        elementsPositionsMap.computeIfAbsent(newCell, k -> new HashSet<>()).add(position);
     }
 
     public void fill(Function<Position, T> cellCreator) {
@@ -31,9 +49,15 @@ public class Board<T> {
             throw new IllegalArgumentException("Boards have different sizes.");
         }
 
-        for (Position position : size.positions()) {
-            T cell = this.getCellAt(position);
+        for (Map.Entry<Position, T> entry : cellsMap.entrySet()) {
+            Position position = entry.getKey();
+            T cell = entry.getValue();
             otherBoard.replaceCellAt(position, cell);
         }
+    }
+
+    public Collection<Position> getPositionsOfElement(T element) {
+        Set<Position> positions = elementsPositionsMap.getOrDefault(element, Collections.emptySet());
+        return Collections.unmodifiableCollection(positions);
     }
 }
