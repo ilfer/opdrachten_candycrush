@@ -2,6 +2,7 @@ package be.kuleuven.opdracht6;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 public record Position(int row, int column, BoardSize boardSize) {
 
@@ -46,6 +47,30 @@ public record Position(int row, int column, BoardSize boardSize) {
 
     private boolean isValidPosition(int row, int column) {
         return row >= 0 && row < boardSize.numRows() && column >= 0 && column < boardSize.numColumns();
+    }
+
+    public Stream<Position> walkLeft() {
+        return Stream.iterate(this, pos -> new Position(pos.row(), pos.column() - 1, boardSize))
+                .limit(column + 1)
+                .filter(pos -> isValidPosition(pos.row(), pos.column()));
+    }
+
+    public Stream<Position> walkRight() {
+        return Stream.iterate(this, pos -> new Position(pos.row(), pos.column() + 1, boardSize))
+                .limit(boardSize.numColumns() - column)
+                .filter(pos -> isValidPosition(pos.row(), pos.column()));
+    }
+
+    public Stream<Position> walkUp() {
+        return Stream.iterate(this, pos -> new Position(pos.row() - 1, pos.column(), boardSize))
+                .limit(row + 1)
+                .filter(pos -> isValidPosition(pos.row(), pos.column()));
+    }
+
+    public Stream<Position> walkDown() {
+        return Stream.iterate(this, pos -> new Position(pos.row() + 1, pos.column(), boardSize))
+                .limit(boardSize.numRows() - row)
+                .filter(pos -> isValidPosition(pos.row(), pos.column()));
     }
 
 }

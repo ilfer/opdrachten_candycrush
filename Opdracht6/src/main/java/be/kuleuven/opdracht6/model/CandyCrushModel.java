@@ -4,6 +4,8 @@ import be.kuleuven.opdracht6.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.*;
+import java.util.stream.Stream;
 
 public class CandyCrushModel {
     private String speler;
@@ -110,5 +112,58 @@ public class CandyCrushModel {
     private boolean isWithinBoard(Position position) {
         return position.row() >= 0 && position.row() < boardSize.numRows() &&
                 position.column() >= 0 && position.column() < boardSize.numColumns();
+    }
+
+    public Set<List<Position>> findAllMatches() {
+        Set<List<Position>> matches = new HashSet<>();
+
+        // Horizontal matches
+        horizontalStartingPositions().forEach(startPos -> {
+            List<Position> match = longestMatchToRight(startPos);
+            if (match.size() >= 3) {
+                matches.add(match);
+            }
+        });
+
+        // Vertical matches
+        verticalStartingPositions().forEach(startPos -> {
+            List<Position> match = longestMatchDown(startPos);
+            if (match.size() >= 3) {
+                matches.add(match);
+            }
+        });
+
+        return matches;
+    }
+
+    public boolean firstTwoHaveCandy(Candy candy, Stream<Position> positions) {
+        Iterator<Position> iterator = positions.iterator();
+        return iterator.hasNext() && iterator.next().equals(candy) && iterator.hasNext() && iterator.next().equals(candy);
+    }
+
+    public Stream<Position> horizontalStartingPositions() {
+        return boardSize.positions().stream().filter(pos -> {
+            Stream<Position> leftNeighbors = pos.walkLeft();
+            return firstTwoHaveCandy(speelbord.getCellAt(pos), leftNeighbors);
+        });
+    }
+
+    public Stream<Position> verticalStartingPositions() {
+        return boardSize.positions().stream().filter(pos -> {
+            Stream<Position> upNeighbors = pos.walkUp();
+            return firstTwoHaveCandy(speelbord.getCellAt(pos), upNeighbors);
+        });
+    }
+
+    public List<Position> longestMatchToRight(Position pos) {
+        return pos.walkRight()
+                .takeWhile(p -> speelbord.getCellAt(p).equals(speelbord.getCellAt(pos)))
+                .toList();
+    }
+
+    public List<Position> longestMatchDown(Position pos) {
+        return pos.walkDown()
+                .takeWhile(p -> speelbord.getCellAt(p).equals(speelbord.getCellAt(pos)))
+                .toList();
     }
 }
