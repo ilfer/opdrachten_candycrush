@@ -166,4 +166,74 @@ public class CandyCrushModel {
                 .takeWhile(p -> speelbord.getCellAt(p).equals(speelbord.getCellAt(pos)))
                 .toList();
     }
+
+    public void clearMatch(List<Position> match) {
+        // Verwijder de snoepjes van de huidige match
+        for (Position position : match) {
+            speelbord.replaceCellAt(position, null);
+            score++;
+        }
+
+        // Hervul lege cellen
+        refillEmptyCells(match);
+
+        // Vind nieuwe matches na het verwijderen van de huidige match
+        Set<List<Position>> newMatches = findAllMatches();
+
+        // Recursief doorgaan met het verwijderen van matches totdat er geen meer zijn
+        for (List<Position> newMatch : newMatches) {
+            clearMatch(newMatch);
+        }
+    }
+
+    public void fallDownTo(Position pos) {
+        // Controleer of de huidige positie zich binnen het speelbord bevindt
+        if (!isWithinBoard(pos))
+            return;
+
+        // Controleer of de huidige positie leeg is
+        if (speelbord.getCellAt(pos) == null) {
+            // Verplaats het snoepje naar beneden als de huidige positie leeg is
+            int row = pos.row();
+            int column = pos.column();
+
+            // Vind de volgende niet-lege positie in dezelfde kolom onder de huidige positie
+            while (row < boardSize.numRows() && speelbord.getCellAt(new Position(row, column, boardSize)) == null) {
+                row++;
+            }
+
+            // Als row buiten het bord is of een niet-lege positie heeft gevonden, verplaats dan het snoepje
+            if (row == boardSize.numRows() || speelbord.getCellAt(new Position(row, column, boardSize)) != null) {
+                row--; // Terug naar de laatste lege positie
+            }
+
+            // Verplaats het snoepje naar de lege positie
+            speelbord.replaceCellAt(new Position(row, column, boardSize), speelbord.getCellAt(pos));
+            speelbord.replaceCellAt(pos, null);
+        }
+
+        // Ga verder met de volgende positie naar beneden
+        fallDownTo(new Position(pos.row() + 1, pos.column(), boardSize));
+    }
+
+    public boolean updateBoard() {
+        // Zoek alle matches
+        Set<List<Position>> matches = findAllMatches();
+
+        // Als er geen matches zijn, geef false terug
+        if (matches.isEmpty())
+            return false;
+
+        // Verwijder elke match, laat de overblijvende snoepjes naar beneden vallen en herhaal indien nodig
+        for (List<Position> match : matches) {
+            clearMatch(match);
+            for (Position pos : match) {
+                fallDownTo(pos);
+            }
+        }
+
+        // Herhaal het proces totdat er geen nieuwe matches meer zijn
+        return updateBoard();
+    }
+
 }
