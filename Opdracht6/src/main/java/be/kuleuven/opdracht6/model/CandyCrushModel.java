@@ -223,14 +223,11 @@ public class CandyCrushModel {
     }
 
     public boolean updateBoard() {
-        // Zoek alle matches
+        // Zoek alle matches op het speelbord
         Set<List<Position>> matches = findAllMatches();
+        boolean matchFound = !matches.isEmpty();
 
-        // Als er geen matches zijn, geef false terug
-        if (matches.isEmpty())
-            return false;
-
-        // Verwijder elke match, laat de overblijvende snoepjes naar beneden vallen en herhaal indien nodig
+        // Verwijder matches en laat de overgebleven snoepjes naar beneden vallen
         for (List<Position> match : matches) {
             clearMatch(match);
             for (Position pos : match) {
@@ -238,8 +235,15 @@ public class CandyCrushModel {
             }
         }
 
-        // Herhaal het proces totdat er geen nieuwe matches meer zijn
-        return updateBoard();
+        // Als er matches zijn verwijderd, ga verder met het updaten van het bord
+        if (matchFound) {
+            // Recursief updaten van het bord totdat er geen matches meer zijn
+            return updateBoard();
+        }
+
+        // Geef true terug als er minstens één match verwijderd is, anders false
+        return matchFound;
     }
+
 
 }
