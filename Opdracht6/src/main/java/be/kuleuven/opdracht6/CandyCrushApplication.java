@@ -10,7 +10,7 @@ public class CandyCrushApplication extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(CandyCrushApplication.class.getResource("CandyCrush-view.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 320, 240);
+        Scene scene = new Scene(fxmlLoader.load(), 387, 400);
         stage.setTitle("Candy Crush");
         stage.setScene(scene);
         stage.show();

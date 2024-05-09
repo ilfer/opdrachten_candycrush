@@ -78,7 +78,7 @@ public class CandyCrushController {
             loginPane.setVisible(false);
 
             // Initialize the model with the player name and board size
-            BoardSize boardSize = new BoardSize(4, 4); // Aangenomen dat het speelbord 4x4 is
+            BoardSize boardSize = new BoardSize(6, 6); // Aangenomen dat het speelbord 6x6 is
             model = new CandyCrushModel(playerName, boardSize);
             view = new CandyCrushView(model, boardSize);
             view.setOnMouseClicked(this::onCandyClicked);

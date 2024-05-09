@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane fx:id="paneel" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="292.0" prefWidth="421.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="be.kuleuven.opdracht6.CandyCrushController">
+<AnchorPane fx:id="paneel" prefHeight="387.0" prefWidth="431.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="be.kuleuven.opdracht6.CandyCrushController">
     <children>
-        <Pane fx:id="loginPane" layoutX="0.0" layoutY="0.0" prefHeight="292.0" prefWidth="421.0">
+        <Pane fx:id="loginPane" layoutX="0.0" layoutY="0.0" prefHeight="387.0" prefWidth="400.0">
             <children>
                 <Label fx:id="errorLabel" layoutX="100.0" layoutY="50.0" textFill="red" />
                 <Label layoutX="31.0" layoutY="24.0" text="Login" />
                 <TextField fx:id="textInput" layoutX="80.0" layoutY="20.0" />
-                <Button fx:id="btnStart" layoutX="250.0" layoutY="20.0" mnemonicParsing="false" text="Start" onAction="#startGame"/>
+                <Button fx:id="btnStart" layoutX="250.0" layoutY="20.0" mnemonicParsing="false" onAction="#startGame" text="Start" />
             </children>
         </Pane>
-        <Pane fx:id="gamePane" layoutX="0.0" layoutY="0.0" prefHeight="292.0" prefWidth="421.0" visible="false">
+        <Pane fx:id="gamePane" layoutX="0.0" layoutY="0.0" prefHeight="292.0" prefWidth="400.0" visible="false">
             <children>
                 <Label fx:id="scoreLabel" layoutX="10.0" layoutY="10.0" text="Score: 0" />
                 <Button fx:id="btnReset" layoutX="133.0" layoutY="30.0" mnemonicParsing="false" text="Reset" />

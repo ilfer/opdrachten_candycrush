@@ -105,8 +105,14 @@ public class CandyCrushModel {
             }
         }
 
+        // Als er minstens één match is, voeg de huidige positie ook toe aan de lijst
+        if (matchingPositions.size() >= 1) {
+            matchingPositions.add(position);
+        }
+
         return matchingPositions;
     }
+
 
 
     private boolean isWithinBoard(Position position) {
