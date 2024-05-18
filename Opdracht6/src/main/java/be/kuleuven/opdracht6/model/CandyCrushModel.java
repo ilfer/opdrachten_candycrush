@@ -39,28 +39,13 @@ public class CandyCrushModel {
 
     public void candyWithPositionSelected(Position position) {
         if (position != null) {
-            int index = position.toIndex();
-            Candy selectedCandy = speelbord.getCellAt(position);
             List<Position> matchingPositions = getSameNeighbourPositions(position);
             if (matchingPositions.size() >= 2) {
-                // Verwijder de overeenkomende snoepjes en verhoog de score
-                for (Position matchingPosition : matchingPositions) {
-                    int matchingIndex = matchingPosition.toIndex();
-                    speelbord.replaceCellAt(matchingPosition, null);
-                    score++;
-                }
-                // Hervul lege cellen
-                refillEmptyCells(matchingPositions);
+                clearMatch(matchingPositions);
+                updateBoard();
             }
         }
     }
-
-    public void refillEmptyCells(List<Position> removedPositions) {
-        for (Position position : removedPositions) {
-            speelbord.replaceCellAt(position, generateRandomCandy(position));
-        }
-    }
-
 
     public void resetGame() {
         score = 0;
@@ -69,26 +54,17 @@ public class CandyCrushModel {
 
     private Candy generateRandomCandy(Position position) {
         Random random = new Random();
-        int randomType = random.nextInt(8); // Assuming there are 5 types of candies
+        int randomType = random.nextInt(8); // Assuming there are 8 types of candies
         switch (randomType) {
-            case 0:
-                return new NormalCandy(0); // Assuming NormalCandy is one of the implementations of Candy
-            case 1:
-                return new NormalCandy(1); // Assuming NormalCandy is one of the implementations of Candy
-            case 2:
-                return new NormalCandy(2); // Assuming NormalCandy is one of the implementations of Candy
-            case 3:
-                return new NormalCandy(3); // Assuming NormalCandy is one of the implementations of Candy
-            case 4:
-                return new DoublePointsCandy(4); // Assuming DoublePointsCandy is one of the implementations of Candy
-            case 5:
-                return new DoublePointsRemoveRow(5); // Assuming DoublePointsRemoveRow is one of the implementations of Candy
-            case 6:
-                return new ExtraMoveCandy(6); // Assuming ExtraMoveCandy is one of the implementations of Candy
-            case 7:
-                return new ExtraMoveCandyRemoveBorder(7); // Assuming ExtraMoveCandyRemoveBorder is one of the implementations of Candy
-            default:
-                return new NormalCandy(1); // Default to NormalCandy if no valid candy type is generated
+            case 0: return new NormalCandy(0);
+            case 1: return new NormalCandy(1);
+            case 2: return new NormalCandy(2);
+            case 3: return new NormalCandy(3);
+            case 4: return new DoublePointsCandy(4);
+            case 5: return new DoublePointsRemoveRow(5);
+            case 6: return new ExtraMoveCandy(6);
+            case 7: return new ExtraMoveCandyRemoveBorder(7);
+            default: return new NormalCandy(1);
         }
     }
 
@@ -105,15 +81,12 @@ public class CandyCrushModel {
             }
         }
 
-        // Als er minstens één match is, voeg de huidige positie ook toe aan de lijst
         if (matchingPositions.size() >= 1) {
             matchingPositions.add(position);
         }
 
         return matchingPositions;
     }
-
-
 
     private boolean isWithinBoard(Position position) {
         return position.row() >= 0 && position.row() < boardSize.numRows() &&
@@ -144,8 +117,15 @@ public class CandyCrushModel {
 
     public boolean firstTwoHaveCandy(Candy candy, Stream<Position> positions) {
         Iterator<Position> iterator = positions.iterator();
-        return iterator.hasNext() && iterator.next().equals(candy) && iterator.hasNext() && iterator.next().equals(candy);
+        while (iterator.hasNext()) {
+            Position pos = iterator.next();
+            if (speelbord.getCellAt(pos) == null || !speelbord.getCellAt(pos).equals(candy)) {
+                return false;
+            }
+        }
+        return true;
     }
+
 
     public Stream<Position> horizontalStartingPositions() {
         return boardSize.positions().stream().filter(pos -> {
@@ -162,88 +142,123 @@ public class CandyCrushModel {
     }
 
     public List<Position> longestMatchToRight(Position pos) {
-        return pos.walkRight()
-                .takeWhile(p -> speelbord.getCellAt(p).equals(speelbord.getCellAt(pos)))
-                .toList();
+        List<Position> match = new ArrayList<>();
+        match.add(pos);
+        return longestMatchToRightHelper(pos, match);
+    }
+
+    private List<Position> longestMatchToRightHelper(Position pos, List<Position> match) {
+        int row = pos.row();
+        int column = pos.column();
+        Candy currentCandy = speelbord.getCellAt(pos);
+
+        while (column + 1 < boardSize.numColumns()) {
+            Position nextPos = new Position(row, column + 1, boardSize);
+            Candy nextCandy = speelbord.getCellAt(nextPos);
+            if (nextCandy != null && nextCandy.equals(currentCandy)) {
+                match.add(nextPos);
+                column++;
+            } else {
+                break;
+            }
+        }
+        return match;
     }
 
     public List<Position> longestMatchDown(Position pos) {
-        return pos.walkDown()
-                .takeWhile(p -> speelbord.getCellAt(p).equals(speelbord.getCellAt(pos)))
-                .toList();
+        List<Position> match = new ArrayList<>();
+        match.add(pos);
+        return longestMatchDownHelper(pos, match);
+    }
+
+    private List<Position> longestMatchDownHelper(Position pos, List<Position> match) {
+        int row = pos.row();
+        int column = pos.column();
+        Candy currentCandy = speelbord.getCellAt(pos);
+
+        while (row + 1 < boardSize.numRows()) {
+            Position nextPos = new Position(row + 1, column, boardSize);
+            Candy nextCandy = speelbord.getCellAt(nextPos);
+            if (nextCandy != null && nextCandy.equals(currentCandy)) {
+                match.add(nextPos);
+                row++;
+            } else {
+                break;
+            }
+        }
+        return match;
     }
 
     public void clearMatch(List<Position> match) {
-        // Verwijder de snoepjes van de huidige match
+        Set<Position> positionsToRemove = new HashSet<>();
+
+        // Add all positions in the match to positionsToRemove
+        positionsToRemove.addAll(match);
+
+        // Remove positions from positionsToRemove if they are not part of the match
         for (Position position : match) {
-            speelbord.replaceCellAt(position, null);
+            for (Position neighborPosition : position.neighborPositions()) {
+                if (speelbord.getCellAt(neighborPosition) != null && !match.contains(neighborPosition)) {
+                    positionsToRemove.remove(neighborPosition);
+                }
+            }
+        }
+
+        // Replace candies at positionsToRemove with null
+        for (Position positionToRemove : positionsToRemove) {
+            speelbord.replaceCellAt(positionToRemove, null);
             score++;
         }
 
-        // Hervul lege cellen
-        refillEmptyCells(match);
+        // Let candies fall down after removing the match
+        for (Position position : match) {
+            fallDownTo(position);
+        }
 
-        // Vind nieuwe matches na het verwijderen van de huidige match
+        // Find new matches after clearing the current match
         Set<List<Position>> newMatches = findAllMatches();
-
-        // Recursief doorgaan met het verwijderen van matches totdat er geen meer zijn
         for (List<Position> newMatch : newMatches) {
             clearMatch(newMatch);
         }
     }
 
     public void fallDownTo(Position pos) {
-        // Controleer of de huidige positie zich binnen het speelbord bevindt
         if (!isWithinBoard(pos))
             return;
 
         // Controleer of de huidige positie leeg is
         if (speelbord.getCellAt(pos) == null) {
-            // Verplaats het snoepje naar beneden als de huidige positie leeg is
-            int row = pos.row();
-            int column = pos.column();
-
-            // Vind de volgende niet-lege positie in dezelfde kolom onder de huidige positie
-            while (row < boardSize.numRows() && speelbord.getCellAt(new Position(row, column, boardSize)) == null) {
-                row++;
+            // Zoek de eerstvolgende niet-lege positie in dezelfde kolom naar boven
+            int row = pos.row() - 1;
+            while (row >= 0 && speelbord.getCellAt(new Position(row, pos.column(), boardSize)) == null) {
+                row--;
             }
-
-            // Als row buiten het bord is of een niet-lege positie heeft gevonden, verplaats dan het snoepje
-            if (row == boardSize.numRows() || speelbord.getCellAt(new Position(row, column, boardSize)) != null) {
-                row--; // Terug naar de laatste lege positie
+            // Als een niet-lege positie wordt gevonden, verplaats het snoepje naar deze positie
+            if (row >= 0) {
+                Position newPos = new Position(row, pos.column(), boardSize);
+                speelbord.replaceCellAt(pos, speelbord.getCellAt(newPos));
+                speelbord.replaceCellAt(newPos, null);
+                // Roep de methode opnieuw aan voor de nieuwe positie om verder naar beneden te vallen
+                fallDownTo(newPos);
+            } else {
+                // Als er geen niet-lege positie wordt gevonden, blijft het snoepje op zijn huidige positie
+                speelbord.replaceCellAt(pos, null);
             }
-
-            // Verplaats het snoepje naar de lege positie
-            speelbord.replaceCellAt(new Position(row, column, boardSize), speelbord.getCellAt(pos));
-            speelbord.replaceCellAt(pos, null);
+        } else {
+            // Als de huidige positie niet leeg is, ga verder naar de volgende positie naar beneden
+            fallDownTo(new Position(pos.row() + 1, pos.column(), boardSize));
         }
-
-        // Ga verder met de volgende positie naar beneden
-        fallDownTo(new Position(pos.row() + 1, pos.column(), boardSize));
     }
 
+
     public boolean updateBoard() {
-        // Zoek alle matches op het speelbord
         Set<List<Position>> matches = findAllMatches();
         boolean matchFound = !matches.isEmpty();
 
-        // Verwijder matches en laat de overgebleven snoepjes naar beneden vallen
         for (List<Position> match : matches) {
             clearMatch(match);
-            for (Position pos : match) {
-                fallDownTo(pos);
-            }
         }
 
-        // Als er matches zijn verwijderd, ga verder met het updaten van het bord
-        if (matchFound) {
-            // Recursief updaten van het bord totdat er geen matches meer zijn
-            return updateBoard();
-        }
-
-        // Geef true terug als er minstens één match verwijderd is, anders false
         return matchFound;
     }
-
-
 }
