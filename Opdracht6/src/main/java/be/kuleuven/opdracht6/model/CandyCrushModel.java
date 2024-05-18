@@ -261,4 +261,90 @@ public class CandyCrushModel {
 
         return matchFound;
     }
+
+    private void swapCandies(Position pos1, Position pos2) {
+        Candy temp = speelbord.getCellAt(pos1);
+        speelbord.replaceCellAt(pos1, speelbord.getCellAt(pos2));
+        speelbord.replaceCellAt(pos2, temp);
+    }
+
+    public int maximizeScore() {
+        List<int[]> bestSequence = new ArrayList<>();
+        int[] currentSequence = new int[28]; // Store current swap indices (x1, y1, x2, y2)
+        backtrack(0, currentSequence, bestSequence);
+
+        // Print the best sequence of swaps for maximum score
+        System.out.println("Beste volgorde van swaps voor maximale score:");
+        for (int[] swap : bestSequence) {
+            System.out.printf("(%d,%d) ⇄ (%d,%d) ; ", swap[0], swap[1], swap[2], swap[3]);
+        }
+        System.out.println(); // New line after printing swaps
+
+        return score; // Return the calculated score
+    }
+
+    private void backtrack(int depth, int[] currentSequence, List<int[]> bestSequence) {
+        if (depth == 7) {
+            // Check if the current sequence results in a higher score
+            Board<Candy> tempBoard = copyBoard(speelbord);
+            int tempScore = score;
+            for (int i = 0; i < 7; i++) {
+                int x1 = currentSequence[i * 4];
+                int y1 = currentSequence[i * 4 + 1];
+                int x2 = currentSequence[i * 4 + 2];
+                int y2 = currentSequence[i * 4 + 3];
+                Position pos1 = new Position(x1, y1, boardSize);
+                Position pos2 = new Position(x2, y2, boardSize);
+                swapCandies(pos1, pos2);
+                updateBoard();
+            }
+            if (score > tempScore || (score == tempScore && bestSequence.isEmpty())) {
+                bestSequence.clear();
+                for (int i = 0; i < 7; i++) {
+                    bestSequence.add(new int[]{currentSequence[i * 4], currentSequence[i * 4 + 1],
+                            currentSequence[i * 4 + 2], currentSequence[i * 4 + 3]});
+                }
+            }
+            // Restore the board and score to previous state
+            speelbord = tempBoard;
+            score = tempScore;
+            return;
+        }
+
+        for (Position pos1 : boardSize.positions()) {
+            for (Position neighbor : pos1.neighborPositions()) {
+                if (isWithinBoard(neighbor) && matchAfterSwitch(pos1, neighbor)) {
+                    // Perform the swap
+                    currentSequence[depth * 4] = pos1.row();
+                    currentSequence[depth * 4 + 1] = pos1.column();
+                    currentSequence[depth * 4 + 2] = neighbor.row();
+                    currentSequence[depth * 4 + 3] = neighbor.column();
+                    // Recur to the next depth
+                    backtrack(depth + 1, currentSequence, bestSequence);
+                    // Undo the swap for backtracking
+                    swapCandies(pos1, neighbor);
+                    updateBoard();
+                }
+            }
+        }
+    }
+
+    private boolean matchAfterSwitch(Position pos1, Position pos2) {
+        // Simulate the swap and check if it results in any matches
+        swapCandies(pos1, pos2);
+        updateBoard();
+        boolean match = !findAllMatches().isEmpty();
+        // Undo the swap
+        swapCandies(pos1, pos2);
+        updateBoard();
+        return match;
+    }
+
+    private Board<Candy> copyBoard(Board<Candy> board) {
+        Board<Candy> copy = new Board<>(boardSize, Candy.class);
+        for (Position position : boardSize.positions()) {
+            copy.replaceCellAt(position, board.getCellAt(position));
+        }
+        return copy;
+    }
 }

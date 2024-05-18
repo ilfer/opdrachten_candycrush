@@ -30,6 +30,9 @@ public class CandyCrushController {
     private Button btnReset;
 
     @FXML
+    private Button btnMaximizeScore;
+
+    @FXML
     private AnchorPane paneel;
 
     @FXML
@@ -63,6 +66,9 @@ public class CandyCrushController {
 
         // Set event handler for reset button
         btnReset.setOnAction(event -> resetGame());
+
+        // Set event handler for maximize score button
+        btnMaximizeScore.setOnAction(event -> maximizeScore());
     }
 
     @FXML
@@ -100,6 +106,12 @@ public class CandyCrushController {
     void resetGame() {
         model.resetGame();
         update(); // Update the view after resetting the game
+    }
+
+    @FXML
+    void maximizeScore() {
+        model.maximizeScore();
+        update(); // Update the view after maximizing score
     }
 
     private void update() {
